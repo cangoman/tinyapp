@@ -29,6 +29,12 @@ const generateRandomString = function() {
   return Math.random().toString(36).substring(2,8);
 };
 
+const formatHTTP = function(address) {
+  if (!address.match(/^http/))
+    address = `http://${address}`;
+  return address;
+}
+
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -99,7 +105,7 @@ app.post("/urls", (req, res) => {
 //Edits an existing URL in the database
 app.post('/urls/:id', (req, res) => {
   const newURL = req.body.longURL;
-  urlDatabase[req.params.id] = newURL;
+  urlDatabase[req.params.id] = formatHTTP(newURL);
   res.redirect('/urls');
 });
 
