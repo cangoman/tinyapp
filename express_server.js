@@ -10,6 +10,18 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 
+/*---------------HELPER FUNCTIONS------------------*/
+
+//fx to check if email already exists
+const emailMatch = function(emailAddress, database) {
+  for (let entry in database) {
+    if (emailAddress === database[entry].email)
+      return true;
+  }
+  return false;
+};
+
+//Use to generate user IDs and tinyURLs
 const generateRandomString = function() {
   return Math.random().toString(36).substring(2,8);
 };
@@ -38,9 +50,6 @@ app.get("/", (req, res) => { //unnecessary
 
 app.get("/urls", (req, res) => {
   let templateVars = {urls: urlDatabase, user: users[req.cookies["user_id"]]};
-  // console.log(users);
-  // console.log('---------------------');
-  // console.log(templateVars.user);
   res.render("urls_index", templateVars);
 } )
 
@@ -93,7 +102,6 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 //login form handler, also creates a cookie
 app.post('/login', (req, res) => {
-  //res.cookie("username", req.body.username);
   res.redirect('/urls')
 });
 
@@ -105,11 +113,15 @@ app.post('/logout', (req, res) => {
 
 //Get registration info, UN and PW, store it in DB and as cookie
 app.post('/register', (req, res) => {
-  const newID = generateRandomString();
-  users[newID] = req.body;
-  users[newID].id = newID;
-  res.cookie("user_id", newID);
-  res.redirect('/urls')
+  if (emailMatch(req.body.email, users) || !req.body.password) {
+    res.sendStatus(400);
+  } else {
+    const newID = generateRandomString();
+    users[newID] = req.body;
+    users[newID].id = newID;
+    res.cookie("user_id", newID);
+    res.redirect('/urls')
+  }
 });
 
 
@@ -117,4 +129,6 @@ app.post('/register', (req, res) => {
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
 });
+
+
 
