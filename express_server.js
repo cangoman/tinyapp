@@ -36,7 +36,7 @@ app.get('/urls.json', (req, res) => { // unnecessary?
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {username: re.cookies["username"]}
+  let templateVars = {username: req.cookies["username"]}
   res.render('urls_new', templateVars);
 ;});
 
