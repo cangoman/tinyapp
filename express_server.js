@@ -67,8 +67,13 @@ app.get('/urls.json', (req, res) => { // unnecessary?
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {user: users[req.cookies["user_id"]]}
-  res.render('urls_new', templateVars);
+  if (!req.cookies["user_id"]) {
+    res.redirect('/urls');
+  } else {
+    let templateVars = {user: users[req.cookies["user_id"]]}
+    res.render('urls_new', templateVars);
+  }
+  
 ;});
 
 app.get("/urls/:shortURL", (req, res) => {
