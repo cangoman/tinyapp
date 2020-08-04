@@ -20,8 +20,16 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID" : {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "supersecurepw1234"
+  }
+}
 
-/*----------REQUEST HANDLERS-----------------*/
+
+/*--------------REQUEST HANDLERS-----------------*/
 
 // GET REQUESTS
 app.get("/", (req, res) => { //unnecessary
@@ -59,7 +67,7 @@ app.get("/register", (req,res) => {
 
 
 
-/*-------------POST REQUESTS----------------*/
+/*---------------POST REQUESTS------------------*/
 
 //Adds a URL to the database
 app.post("/urls", (req, res) => {
@@ -93,6 +101,17 @@ app.post('/logout', (req, res) => {
   res.redirect("/urls");
 });
 
+//Get registration info, UN and PW, store it in DB and as cookie
+app.post('/register', (req, res) => {
+  const newID = generateRandomString();
+  users[newID] = req.body;
+  users[newID][newID] = newID;
+  res.cookie("user_id", newID);
+  res.redirect('/urls')
+});
+
+
+// Run our server
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
 });
