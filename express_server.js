@@ -110,8 +110,8 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 });
 
 //login form handler, also creates a cookie
-app.post('/login', (req, res) => {
-  res.redirect('/urls')
+app.post('/login', (req, res) => {  // THIS WILL HAVE TO CHANGE, THIS IS THE SUBMIT FORM
+  //res.redirect('/login')
 });
 
 //logout form request handler, clears cookie

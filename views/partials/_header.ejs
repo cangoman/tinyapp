@@ -12,10 +12,8 @@
       <div class="nav-link nav-item mr-auto"></div>
        
       <% if (!user) { %>
-        <form class="form-inline" method="POST" action="/login">
-            <input class="form-control" type="text" name="username" placeholder="Username" style="width: 150px ;">
-            <button type="submit" class="btn navbar-btn" style="margin-left: 10px; border-color: #222222; background-color: transparent ">Log In</button>   
-        </form>
+            <a class="btn btn-outline-dark" href="/login" role="button">Log In</a>
+            <a class="btn btn-outline-dark ml-3" href="/register" role="button">Register</a> 
       <% } else { %>
         Logged in as: <%= user.email %>
         <form class="form-inline" method="POST" action="/logout">
