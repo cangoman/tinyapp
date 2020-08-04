@@ -3,9 +3,11 @@ const express = require('express');
 const app = express();
 const PORT = 8080; // default port
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 
 const generateRandomString = function() {
@@ -34,7 +36,7 @@ app.get('/urls.json', (req, res) => { // unnecessary?
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {username: req.cookies["username"]}
+  let templateVars = {username: re.cookies["username"]}
   res.render('urls_new', templateVars);
 ;});
 
