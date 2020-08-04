@@ -11,10 +11,10 @@
       </div>
       <div class="nav-link nav-item mr-auto"></div>
        
-      <% if (!username) { %>}
+      <% if (!username) { %>
         <form class="form-inline" method="POST" action="/login">
             <input class="form-control" type="text" name="username" placeholder="Username" style="width: 150px ;">
-            <button type="submit" class="btn btn-primary" style="margin-left: 10px">Log In</button>   
+            <button type="submit" class="btn navbar-btn" style="margin-left: 10px; border-color: #222222; background-color: transparent ">Log In</button>   
         </form>
       <% } else { %>
         Logged in as: <%= username %>
