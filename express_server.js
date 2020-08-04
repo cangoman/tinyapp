@@ -26,7 +26,7 @@ const users = {
     email: "user@example.com",
     password: "supersecurepw1234"
   }
-}
+};
 
 
 /*--------------REQUEST HANDLERS-----------------*/
@@ -37,7 +37,10 @@ app.get("/", (req, res) => { //unnecessary
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase, username: req.cookies["username"]};
+  let templateVars = {urls: urlDatabase, user: users[req.cookies["user_id"]]};
+  // console.log(users);
+  // console.log('---------------------');
+  // console.log(templateVars.user);
   res.render("urls_index", templateVars);
 } )
 
@@ -46,12 +49,12 @@ app.get('/urls.json', (req, res) => { // unnecessary?
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {username: req.cookies["username"]}
+  let templateVars = {user: users[req.cookies["user_id"]]}
   res.render('urls_new', templateVars);
 ;});
 
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]] };
   res.render('urls_show', templateVars);
 });
 
@@ -61,10 +64,9 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req,res) => {
-  let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]] };
   res.render("register", templateVars);
 });
-
 
 
 /*---------------POST REQUESTS------------------*/
@@ -91,13 +93,13 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 //login form handler, also creates a cookie
 app.post('/login', (req, res) => {
-  res.cookie("username", req.body.username);
+  //res.cookie("username", req.body.username);
   res.redirect('/urls')
 });
 
 //logout form request handler, clears cookie
 app.post('/logout', (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
@@ -105,7 +107,7 @@ app.post('/logout', (req, res) => {
 app.post('/register', (req, res) => {
   const newID = generateRandomString();
   users[newID] = req.body;
-  users[newID][newID] = newID;
+  users[newID].id = newID;
   res.cookie("user_id", newID);
   res.redirect('/urls')
 });
