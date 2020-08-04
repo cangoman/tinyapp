@@ -70,11 +70,11 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render('urls_show', templateVars);
 });
 
-// app.get("/u/:shortURL", (req, res) => { // UNNECESSARY???
-//   const longURL = urlDatabase[req.params["shortURL"]];
-//   console.log(longURL);
-//   res.redirect(longURL);
-// });
+app.get("/u/:shortURL", (req, res) => { // UNNECESSARY???
+  const longURL = urlDatabase[req.params["shortURL"]];
+  console.log(longURL);
+  res.redirect(longURL);
+});
 
 app.get("/register", (req,res) => {
   let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]] };
@@ -112,11 +112,12 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 //login form handler, also creates a cookie
 app.post('/login', (req, res) => {  // 
   const id = emailMatch(req.body.email, users);
-  if (!id || (req.body.password !== users[id].password))
+  if (!id || (req.body.password !== users[id].password)) {
     res.sendStatus(403);
-  
-  res.cookie('user_id', id);
-  res.redirect('/urls');
+  } else {
+    res.cookie('user_id', id);
+    res.redirect('/urls');
+  }
 });
 
 //logout form request handler, clears cookie
