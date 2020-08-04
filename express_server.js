@@ -19,7 +19,7 @@ app.use(cookieParser());
 const emailMatch = function(emailAddress, database) {
   for (let entry in database) {
     if (emailAddress === database[entry].email)
-      return true;
+      return entry;
   }
   return false;
 };
@@ -110,8 +110,13 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 });
 
 //login form handler, also creates a cookie
-app.post('/login', (req, res) => {  // THIS WILL HAVE TO CHANGE, THIS IS THE SUBMIT FORM
-  //res.redirect('/login')
+app.post('/login', (req, res) => {  // 
+  const id = emailMatch(req.body.email, users);
+  if (!id || (req.body.password !== users[id].password))
+    res.sendStatus(403);
+  
+  res.cookie('user_id', id);
+  res.redirect('/urls');
 });
 
 //logout form request handler, clears cookie
