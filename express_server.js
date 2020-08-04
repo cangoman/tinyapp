@@ -21,7 +21,9 @@ const urlDatabase = {
 };
 
 
-// request handlers
+/*----------REQUEST HANDLERS-----------------*/
+
+// GET REQUESTS
 app.get("/", (req, res) => { //unnecessary
   res.send("Hello!");
 });
@@ -48,7 +50,16 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
-})
+});
+
+app.get("/register", (req,res) => {
+  let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  res.render("register", templateVars);
+});
+
+
+
+/*-------------POST REQUESTS----------------*/
 
 //Adds a URL to the database
 app.post("/urls", (req, res) => {
