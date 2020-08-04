@@ -57,12 +57,10 @@ app.post("/urls", (req, res) => {
   res.redirect(302, `/urls/${shortURL}`)
 });
 
-
 //Edits an existing URL in the database
 app.post('/urls/:id', (req, res) => {
   const newURL = req.body.longURL;
   urlDatabase[req.params.id] = newURL;
-  //console.log(req.params);
   res.redirect('/urls');
 });
 
@@ -82,12 +80,9 @@ app.post('/login', (req, res) => {
 app.post('/logout', (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls");
-
 });
 
-
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-  
+  console.log(`App listening on port ${PORT}!`);
 });
 
