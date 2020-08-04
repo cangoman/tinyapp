@@ -6,7 +6,7 @@
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
-  <title>TinyApp Registration Page</title>
+  <title>TinyApp Login Page</title>
 
 </head>
 
@@ -14,10 +14,10 @@
   
   <%- include('partials/_header') %>
   <main style="margin: 1em"></main>
-  <h2 class='col-sm-6'>Create Account</h2>
+  <h2 class='col-sm-6'>Log In</h2>
 
     <div class="form-group col-sm-6 mt-3">
-      <form method="POST" action="/register" id="register">
+      <form method="POST" action="/login" id="login">
         <label for="emailAddress">Email address</label>
         <input type="email" class="form-control" name="email" placeholder="name@example.com">
         <label for="password" class="mt-2">Password</label>

@@ -1,4 +1,7 @@
+/*---------------CONSTANTS AND IMPORTS------------------*/
+
 //Import express, define my constants
+
 const express = require('express');
 const app = express();
 const PORT = 8080; // default port
@@ -69,6 +72,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
+  console.log(req.params.shortURL);
   res.redirect(longURL);
 });
 
@@ -76,6 +80,11 @@ app.get("/register", (req,res) => {
   let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]] };
   res.render("register", templateVars);
 });
+
+app.get('/login', (req, res) => {
+  let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]] };
+  res.render('login', templateVars);
+})
 
 
 /*---------------POST REQUESTS------------------*/
