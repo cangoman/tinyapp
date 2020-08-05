@@ -68,8 +68,12 @@ const urlsForUser = function(id) {
 /*--------------REQUEST HANDLERS-----------------*/
 
 // GET REQUESTS
-app.get("/", (req, res) => { //unnecessary
-  res.send("Hello!");
+app.get("/", (req, res) => { 
+  if (!req.session.user_id) {
+    res.redirect('/login');
+  } else {
+    res.redirect('/urls');
+  }
 });
 
 app.get("/urls", (req, res) => {
@@ -84,15 +88,18 @@ app.get('/urls.json', (req, res) => { // unnecessary?
 
 app.get("/urls/new", (req, res) => {
   if (!req.session.user_id) {
-    res.redirect('/urls');
+    res.redirect('/login');
   } else {
     let templateVars = {user: users[req.session.user_id]}
     res.render('urls_new', templateVars);
   }
 ;});
 
-app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session.user_id] };
+app.get("/urls/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    res.status(400).send('Invalid URL');
+  }
+  let templateVars = {shortURL: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.session.user_id] };
   res.render('urls_show', templateVars);
 });
 
@@ -102,13 +109,22 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req,res) => {
+  if (!req.session.user_id) {
   let templateVars = {user: users[req.session.user_id] };
   res.render("register", templateVars);
+  } else {
+    res.redirect('/urls');
+  }
+
 });
 
 app.get('/login', (req, res) => {
-  let templateVars = {user: users[req.session.user_id]}
-  res.render('login', templateVars);
+  if (!req.session.user_id) {
+    let templateVars = {user: users[req.session.user_id]}
+    res.render('login', templateVars);
+  } else {
+    res.redirect('/urls');
+  }
 });
 
 
@@ -116,9 +132,14 @@ app.get('/login', (req, res) => {
 
 //Adds a URL to the database
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = formatHTTP(req.body.longURL);
-  res.redirect(302, `/urls/${shortURL}`)
+  const user = req.session.user_id;
+  if (user) {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = { longURL: formatHTTP(req.body.longURL), userID: user };
+    res.redirect(302, `/urls/${shortURL}`)
+  } else {
+    res.redirect('/urls');
+  }
 });
 
 //Edits an existing URL in the database
@@ -142,6 +163,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 //login form handler, also creates a cookie
 app.post('/login', (req, res) => {  // 
+  
   const user = getUserByEmail(req.body.email, users);
   if (!user || ( !bcrypt.compareSync(req.body.password, user.password)) ) {
     res.sendStatus(403);
