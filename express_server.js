@@ -6,6 +6,7 @@ const PORT = 8080; // default port
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+const { getUserByEmail } = require('./helpers');
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -38,15 +39,9 @@ const users = {
 
 /*---------------HELPER FUNCTIONS------------------*/
 
-//fx to check if email already exists
+
 //We could omit passing the database as an argument, cause we are using a global variable
-const emailMatch = function(emailAddress, database) {
-  for (let entry in database) {
-    if (emailAddress === database[entry].email)
-      return entry;
-  }
-  return false;
-};
+
 
 //Use to generate user IDs and tinyURLs
 const generateRandomString = function() {
@@ -147,11 +142,11 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 //login form handler, also creates a cookie
 app.post('/login', (req, res) => {  // 
-  const id = emailMatch(req.body.email, users);
-  if (!id || ( !bcrypt.compareSync(req.body.password,users[id].password)) ) {
+  const user = getUserByEmail(req.body.email, users);
+  if (!user || ( !bcrypt.compareSync(req.body.password, user.password)) ) {
     res.sendStatus(403);
   } else {
-    req.session.user_id = id;
+    req.session.user_id = user.id;
     res.redirect('/urls');
   }
 });
@@ -164,7 +159,7 @@ app.post('/logout', (req, res) => {
 
 //Get registration info, UN and hashed PW, store it in DB and store email as cookie
 app.post('/register', (req, res) => {
-  if (emailMatch(req.body.email, users) || !req.body.password) {
+  if (getUserByEmail(req.body.email, users) || !req.body.password) {
     res.sendStatus(400);
   } else {
     const newID = generateRandomString();
