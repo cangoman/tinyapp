@@ -22,6 +22,9 @@
         <input type="email" class="form-control" name="email" placeholder="name@example.com">
         <label for="password" class="mt-2">Password</label>
         <input type="password" class="form-control" name="password" placeholder="Password">
+        <% if (error) { %>
+          <p  class="alert-danger mt-1" style=" font-size: 0.8em; margin: none; padding: none" > <%= error %> </p>
+        <% } %>
         <button type="submit" class="btn btn-primary mt-3">Submit</button>
       </form>
     </div>

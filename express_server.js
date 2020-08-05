@@ -87,7 +87,7 @@ app.get("/u/:id", (req, res) => {
 
 app.get("/register", (req,res) => {
   if (!req.session.user_id) {
-    let templateVars = {user: users[req.session.user_id] };
+    let templateVars = {user: users[req.session.user_id], error: "" };
     res.render("register", templateVars);
   } else {
     res.redirect('/urls');
@@ -96,7 +96,7 @@ app.get("/register", (req,res) => {
 
 app.get('/login', (req, res) => {
   if (!req.session.user_id) {
-    let templateVars = {user: users[req.session.user_id]};
+    let templateVars = {user: users[req.session.user_id], error: ""};
     res.render('login', templateVars);
   } else {
     res.redirect('/urls');
@@ -139,10 +139,13 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 //login form handler, also creates a cookie
 app.post('/login', (req, res) => {  //
-  
   const user = getUserByEmail(req.body.email, users);
   if (!user || (!bcrypt.compareSync(req.body.password, user.password))) {
-    res.sendStatus(403);
+    const errorMessage = "Invalid email/username combination";
+    let templateVars = {error : errorMessage, user: "" }
+    console.log(errorMessage);
+    res.render('login', templateVars);
+    //res.sendStatus(403);
   } else {
     req.session.user_id = user.id;
     res.redirect('/urls');
@@ -157,8 +160,11 @@ app.post('/logout', (req, res) => {
 
 //Get registration info, UN and hashed PW, store it in DB and store email as cookie
 app.post('/register', (req, res) => {
-  if (getUserByEmail(req.body.email, users) || !req.body.password) {
-    res.sendStatus(400);
+  let errorMessage;
+  if (getUserByEmail(req.body.email, users)) {
+    errorMessage = "Email address is already in use. Please try again with a different one";
+  } else if (!req.body.password) {
+    errorMessage = "Password field cannot be empty";
   } else {
     const newID = generateRandomString();
     const hashedPassword = bcrypt.hashSync(req.body.password, 10);
@@ -166,6 +172,9 @@ app.post('/register', (req, res) => {
     req.session.user_id = newID;
     res.redirect('/urls');
   }
+  let templateVars = {error : errorMessage, user: "" }
+  res.render('register', templateVars);
+
 });
 
 
