@@ -130,11 +130,17 @@ app.post('/urls/:id', (req, res) => {
 
 //Deletes a URL from the database
 app.post('/urls/:shortURL/delete', (req, res) => {
-  const id = req.params.shortURL;
-  if (req.session.user_id === urlDatabase[id].userID) {
-    delete urlDatabase[req.params.shortURL];
+  if (!req.session.user_id) {
+    const errorMessage = "You are not logged in!"
+    let templateVars = {user: "", error: errorMessage};
+    res.render('error', templateVars);
+  } else {
+    const id = req.params.shortURL;
+    if (urlDatabase[id] && req.session.user_id === urlDatabase[id].userID) {
+      delete urlDatabase[id];
+    }
+    res.redirect("/urls");
   }
-  res.redirect("/urls");
 });
 
 //login form handler, also creates a cookie
