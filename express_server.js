@@ -2,11 +2,12 @@
 
 const express = require('express');
 const app = express();
-const PORT = 8080; // default port
 const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const { getUserByEmail, generateRandomString, formatHTTP, urlsForUser} = require('./helpers');
+const PORT = 8080; // default port
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -14,7 +15,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['randomStringyBop', 'also quite random stuff']
 }));
-
+app.use(methodOverride('_method'));
 
 /*----------DATABASE-FUNCTIONING OBJECTS----------*/
 /*----------------global variables----------------*/
@@ -118,31 +119,6 @@ app.post("/urls", (req, res) => {
   }
 });
 
-//Edits an existing URL in the database
-app.post('/urls/:id', (req, res) => {
-  const id = req.params.id;
-  if (req.session["user_id"] === urlDatabase[id].userID) {
-    const newURL = req.body.longURL;
-    urlDatabase[id].longURL = formatHTTP(newURL);
-  }
-  res.redirect('/urls');
-});
-
-//Deletes a URL from the database
-app.post('/urls/:shortURL/delete', (req, res) => {
-  if (!req.session.user_id) {
-    const errorMessage = "You are not logged in!"
-    let templateVars = {user: "", error: errorMessage};
-    res.render('error', templateVars);
-  } else {
-    const id = req.params.shortURL;
-    if (urlDatabase[id] && req.session.user_id === urlDatabase[id].userID) {
-      delete urlDatabase[id];
-    }
-    res.redirect("/urls");
-  }
-});
-
 //login form handler, also creates a cookie
 app.post('/login', (req, res) => {  //
   const user = getUserByEmail(req.body.email, users);
@@ -154,7 +130,7 @@ app.post('/login', (req, res) => {  //
     //res.sendStatus(403);
   } else {
     req.session.user_id = user.id;
-    res.redirect('/urls');
+    res.redirect('urls');
   }
 });
 
@@ -181,6 +157,36 @@ app.post('/register', (req, res) => {
   let templateVars = {error : errorMessage, user: "" }
   res.render('register', templateVars);
 
+});
+
+/*----------------EDIT REQUESTS------------------*/
+
+//Edits an existing URL in the database
+app.put('/urls/:id', (req, res) => {
+  const id = req.params.id;
+  if (req.session["user_id"] === urlDatabase[id].userID) {
+    const newURL = req.body.longURL;
+    urlDatabase[id].longURL = formatHTTP(newURL);
+  }
+  res.redirect('/urls');
+});
+
+/*----------------DELETE REQUESTS------------------*/
+
+
+//Deletes a URL from the database
+app.delete('/urls/:shortURL', (req, res) => {
+  if (!req.session.user_id) {
+    const errorMessage = "You are not logged in!"
+    let templateVars = {user: "", error: errorMessage};
+    res.render('error', templateVars);
+  } else {
+    const id = req.params.shortURL;
+    if (urlDatabase[id] && req.session.user_id === urlDatabase[id].userID) {
+      delete urlDatabase[id];
+    }
+    res.redirect("/urls");
+  }
 });
 
 
