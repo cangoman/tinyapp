@@ -1,10 +1,11 @@
-/*---------------CONSTANTS AND IMPORTS------------------*/
+/*------------------IMPORTS---------------------*/
 
 const express = require('express');
 const app = express();
 const PORT = 8080; // default port
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -28,7 +29,7 @@ const users = {
   aJ48lW : {
     id: "aJ48lW",
     email: "user@example.com",
-    password: "1234"
+    password: bcrypt.hashSync("1234", 10)
   }
 };
 
@@ -103,7 +104,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req,res) => {
-  let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies["user_id"]] };
+  let templateVars = {user: users[req.cookies["user_id"]] };
   res.render("register", templateVars);
 });
 
@@ -145,7 +146,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 //login form handler, also creates a cookie
 app.post('/login', (req, res) => {  // 
   const id = emailMatch(req.body.email, users);
-  if (!id || (req.body.password !== users[id].password)) {
+  if (!id || ( !bcrypt.compareSync(req.body.password,users[id].password)) ) {
     res.sendStatus(403);
   } else {
     res.cookie('user_id', id);
@@ -159,16 +160,16 @@ app.post('/logout', (req, res) => {
   res.redirect("/urls");
 });
 
-//Get registration info, UN and PW, store it in DB and as cookie
+//Get registration info, UN and hashed PW, store it in DB and store email as cookie
 app.post('/register', (req, res) => {
   if (emailMatch(req.body.email, users) || !req.body.password) {
     res.sendStatus(400);
   } else {
     const newID = generateRandomString();
-    users[newID] = req.body;
-    users[newID].id = newID;
+    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+    users[newID] = { id: newID, email: req.body.email, password: hashedPassword };
     res.cookie("user_id", newID);
-    res.redirect('/urls')
+    res.redirect('/urls');
   }
 });
 

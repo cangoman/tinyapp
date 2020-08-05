@@ -26,7 +26,7 @@
       </thead>
 
       <% if (!user) { %>
-      <script>alert('Please log in or register to continue') </script>
+      <script>setTimeout( () => alert('Please log in or register to continue'), 1000) </script>
       <% } else { %>
       <tbody>
         <% for(let url in urls) { %>
