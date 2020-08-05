@@ -1,7 +1,5 @@
 /*---------------CONSTANTS AND IMPORTS------------------*/
 
-//Import express, define my constants
-
 const express = require('express');
 const app = express();
 const PORT = 8080; // default port
@@ -13,9 +11,31 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 
+/*----------DATABASE-FUNCTIONING OBJECTS----------*/
+/*----------------global variables----------------*/
+
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
+
+const urlDatabase = {
+  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW" },
+  "9sm5xK": {longURL: "http://www.google.com", userID: "aJ48lW" }
+};
+
+const users = {
+  aJ48lW : {
+    id: "aJ48lW",
+    email: "user@example.com",
+    password: "1234"
+  }
+};
+
 /*---------------HELPER FUNCTIONS------------------*/
 
 //fx to check if email already exists
+//We could omit passing the database as an argument, cause we are using a global variable
 const emailMatch = function(emailAddress, database) {
   for (let entry in database) {
     if (emailAddress === database[entry].email)
@@ -35,28 +55,14 @@ const formatHTTP = function(address) {
   return address;
 };
 
-
 const urlsForUser = function(id) {
-
-}
-
-/*---------DATABASE-FUNCTIONING OBJECTS-----------*/
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
-
-const urlDatabase = {
-  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW" },
-  "9sm5xK": {longURL: "http://www.google.com", UserID: "aJ48lW" }
-};
-
-const users = {
-  aJ48lW : {
-    id: "aJ48lW",
-    email: "user@example.com",
-    password: "supersecurepw1234"
-  }
+    const urlsForUser = {};
+    for (let url in urlDatabase) {
+      if (id === urlDatabase[url].userID) {
+        urlsForUser[url] = urlDatabase[url];
+      }
+    }
+    return urlsForUser;
 };
 
 
@@ -68,8 +74,8 @@ app.get("/", (req, res) => { //unnecessary
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase, user: users[req.cookies["user_id"]]};
-  console.log(templateVars.urls);
+  const userURL = urlsForUser(req.cookies["user_id"]);
+  let templateVars = {urls: userURL, user: users[req.cookies["user_id"]]};
   res.render("urls_index", templateVars);
 });
 
@@ -93,7 +99,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => { 
   const longURL = urlDatabase[req.params["shortURL"]].longURL;
-  console.log(longURL);
   res.redirect(longURL);
 });
 
@@ -103,7 +108,8 @@ app.get("/register", (req,res) => {
 });
 
 app.get('/login', (req, res) => {
-  let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies["user_id"]] };
+  // let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies["user_id"]] };
+  let templateVars = {user: users[req.cookies["user_id"]]}
   res.render('login', templateVars);
 });
 
