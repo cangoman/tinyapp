@@ -108,7 +108,6 @@ app.get("/register", (req,res) => {
 });
 
 app.get('/login', (req, res) => {
-  // let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies["user_id"]] };
   let templateVars = {user: users[req.cookies["user_id"]]}
   res.render('login', templateVars);
 });
@@ -125,14 +124,21 @@ app.post("/urls", (req, res) => {
 
 //Edits an existing URL in the database
 app.post('/urls/:id', (req, res) => {
-  const newURL = req.body.longURL;
-  urlDatabase[req.params.id].longURL = formatHTTP(newURL);
+  const id = req.params.id;
+  console.log(id);
+  if (req.cookies["user_id"] === urlDatabase[id].userID) {
+    const newURL = req.body.longURL;
+    urlDatabase[id].longURL = formatHTTP(newURL);  
+  }
   res.redirect('/urls');
 });
 
 //Deletes a URL from the database
 app.post('/urls/:shortURL/delete', (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  const id = req.params.shortURL;
+  if (req.cookies["user_id"] === urlDatabase[id].userID){
+    delete urlDatabase[req.params.shortURL];
+  }
   res.redirect("/urls");
 });
 
