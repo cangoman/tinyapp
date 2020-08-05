@@ -100,7 +100,7 @@ app.get("/urls/:id", (req, res) => {
     res.status(400).redirect('/login');
   } else {
     const url = urlDatabase[req.params.id];
-    if (!url || url.id !== req.session.user_id) {
+    if (!url || url.userID !== req.session.user_id) {
       const errorMessage = "The URL requested does not exist, or you don't have the appropriate permissions"
       let templateVars = {shortURL: req.params.id, error: errorMessage, user: users[req.session.user_id]};
       res.render('error', templateVars);
