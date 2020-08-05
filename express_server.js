@@ -6,7 +6,7 @@ const PORT = 8080; // default port
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
-const { getUserByEmail } = require('./helpers');
+const { getUserByEmail, generateRandomString, formatHTTP, urlsForUser} = require('./helpers');
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -18,11 +18,6 @@ app.use(cookieSession({
 
 /*----------DATABASE-FUNCTIONING OBJECTS----------*/
 /*----------------global variables----------------*/
-
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
 
 const urlDatabase = {
   "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW" },
@@ -37,34 +32,6 @@ const users = {
   }
 };
 
-/*---------------HELPER FUNCTIONS------------------*/
-
-
-//We could omit passing the database as an argument, cause we are using a global variable
-
-
-//Use to generate user IDs and tinyURLs
-const generateRandomString = function() {
-  return Math.random().toString(36).substring(2,8);
-};
-
-const formatHTTP = function(address) {
-  if (!address.match(/^http/))
-    address = `http://${address}`;
-  return address;
-};
-
-const urlsForUser = function(id) {
-  const urlsForUser = {};
-  for (let url in urlDatabase) {
-    if (id === urlDatabase[url].userID) {
-      urlsForUser[url] = urlDatabase[url];
-    }
-  }
-  return urlsForUser;
-};
-
-
 /*--------------REQUEST HANDLERS-----------------*/
 
 // GET REQUESTS
@@ -77,14 +44,10 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userURL = urlsForUser(req.session.user_id);
+  const userURL = urlsForUser(req.session.user_id, urlDatabase);
   let templateVars = {urls: userURL, user: users[req.session.user_id]};
   res.render("urls_index", templateVars);
 });
-
-// app.get('/urls.json', (req, res) => { // unnecessary?
-//   res.json(urlDatabase);
-// });
 
 app.get("/urls/new", (req, res) => {
   if (!req.session.user_id) {
