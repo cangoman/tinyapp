@@ -25,11 +25,14 @@
         </tr>
       </thead>
 
+      <% if (!user) { %>
+      <script>alert('Please log in or register to continue') </script>
+      <% } else { %>
       <tbody>
         <% for(let url in urls) { %>
           <tr>
             <td><%= url %></td>
-            <td><%= urls[url] %></td>
+            <td><%= urls[url].longURL %></td>
             <form method="GET" action="/urls/<%= url %>/"><td><button id="edit" style="color: #007bff; background-color: white; border: 1px solid #007bff; border-radius: 10%">Edit</button></td></form>
 
             <form method="POST" action="/urls/<%= url %>/delete"><td><button id="delete" style="color: #B00000; background-color: white; border: 1px solid #B00000; border-radius: 10%">Delete</button></td></form>
@@ -37,6 +40,7 @@
           </tr>
         <% } %>
       </tbody>
+      <% } %>
     </table>
   </main>
 
