@@ -4,13 +4,13 @@ const { getUserByEmail, generateRandomString, formatHTTP, urlsForUser} = require
 
 const testUsers = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
   "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: "dishwasher-funk"
   }
 };
@@ -22,13 +22,13 @@ const urlDatabase = {
 
 describe('getUserByEmail', function() {
   it('should return a user with valid email', function() {
-    const user = getUserByEmail("user@example.com", testUsers)
+    const user = getUserByEmail("user@example.com", testUsers);
     const expectedOutput = "userRandomID";
     assert.deepEqual(user, testUsers[expectedOutput]);
   });
 
   it('should return undefined for an invalid email', function() {
-    const user = getUserByEmail("user@example.edu", testUsers)
+    const user = getUserByEmail("user@example.edu", testUsers);
     assert.isUndefined(user);
   });
 

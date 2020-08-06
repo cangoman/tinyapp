@@ -33,8 +33,8 @@ const urlsForUser = function(id, urlDatabase) {
 
 module.exports = {
   getUserByEmail,
-  generateRandomString, 
-  formatHTTP, 
+  generateRandomString,
+  formatHTTP,
   urlsForUser
-}
+};
 

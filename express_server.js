@@ -48,7 +48,7 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const userURL = urlsForUser(req.session.user_id, urlDatabase);
-  let templateVars = {urls: userURL, user: users[req.session.user_id]} ;
+  let templateVars = {urls: userURL, user: users[req.session.user_id]};
   res.render("urls_index", templateVars);
 });
 
@@ -67,7 +67,7 @@ app.get("/urls/:id", (req, res) => {
   } else {
     const url = urlDatabase[req.params.id];
     if (!url || url.userID !== req.session.user_id) {
-      const errorMessage = "The URL requested does not exist, or you don't have the appropriate permissions"
+      const errorMessage = "The URL requested does not exist, or you don't have the appropriate permissions";
       let templateVars = {shortURL: req.params.id, error: errorMessage, user: users[req.session.user_id]};
       res.render('error', templateVars);
     } else {
@@ -88,7 +88,7 @@ app.get("/u/:id", (req, res) => {
     //Check for existing visitor cookie, create one if it doesnt exist
     if (!req.session.visitor_id) {
       req.session.visitor_id = generateRandomString();
-    } 
+    }
 
     //check if user has visited URL before, if not, add to the visitor property
     if (!urlDatabase[id].visitors.includes(req.session.visitor_id)) {
@@ -146,7 +146,7 @@ app.post('/login', (req, res) => {  //
   const user = getUserByEmail(req.body.email, users);
   if (!user || (!bcrypt.compareSync(req.body.password, user.password))) {
     const errorMessage = "Invalid email/username combination";
-    let templateVars = {error : errorMessage, user: "" }
+    let templateVars = {error : errorMessage, user: "" };
     res.render('login', templateVars);
   } else {
     req.session.user_id = user.id;
@@ -165,11 +165,11 @@ app.post('/register', (req, res) => {
   let errorMessage;
   if (getUserByEmail(req.body.email, users)) {
     errorMessage = "Email address is already in use. Please try again with a different one";
-    let templateVars = {error : errorMessage, user: "" }
+    let templateVars = {error : errorMessage, user: "" };
     res.render('register', templateVars);
   } else if (!req.body.password) {
     errorMessage = "Password field cannot be empty";
-    let templateVars = {error : errorMessage, user: "" }
+    let templateVars = {error : errorMessage, user: "" };
     res.render('register', templateVars);
   } else {
     const newID = generateRandomString();
@@ -177,7 +177,7 @@ app.post('/register', (req, res) => {
     users[newID] = { id: newID, email: req.body.email, password: hashedPassword };
     req.session.user_id = newID;
     res.redirect('/urls');
-    }
+  }
 });
 
 /*----------------PUT REQUESTS------------------*/
@@ -190,9 +190,9 @@ app.put('/urls/:id', (req, res) => {
     urlDatabase[id].longURL = formatHTTP(newURL);
     res.redirect('/urls');
   } else {
-    const errorMessage = "You don't have the permissions to edit this URL!"
+    const errorMessage = "You don't have the permissions to edit this URL!";
     let templateVars = {user: "", error: errorMessage};
-    res.render('error', templateVars);  
+    res.render('error', templateVars);
   }
 });
 
@@ -201,7 +201,7 @@ app.put('/urls/:id', (req, res) => {
 //Deletes a URL from the database
 app.delete('/urls/:shortURL', (req, res) => {
   if (!req.session.user_id) {
-    const errorMessage = "You are not logged in!"
+    const errorMessage = "You are not logged in!";
     let templateVars = {user: "", error: errorMessage};
     res.render('error', templateVars);
   } else {
@@ -210,7 +210,7 @@ app.delete('/urls/:shortURL', (req, res) => {
       delete urlDatabase[id];
       res.redirect("/urls");
     } else {
-      const errorMessage = "You don't have the permissions to delete this URL!"
+      const errorMessage = "You don't have the permissions to delete this URL!";
       let templateVars = {user: "", error: errorMessage};
       res.render('error', templateVars);
     }
