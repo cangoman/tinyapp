@@ -20,6 +20,9 @@
         <tr>
           <th scope="col">Short URL</th>
           <th scope="col">Long URL</th>
+          <th scope="col">Created on</th>
+          <th scope="col">No. of Visits</th>
+          <th scope="col">No. of Unique Visits</th>
           <th scope="col">Edit</th>
           <th scope="col">Delete</th>
         </tr>
@@ -33,6 +36,12 @@
           <tr>
             <td><%= url %></td>
             <td><%= urls[url].longURL %></td>
+
+            <td><% const date = new Date(urls[url].created) %> 
+            <% const strDate =  date.toString().substring(4,15) %>
+            <%= strDate %></td>
+            <td><%= urls[url].visits.length %></td>
+            <td><%= urls[url].visitors.length %></td>
             <form method="GET" action="/urls/<%= url %>/"><td><button id="edit" style="color: #007bff; background-color: white; border: 1px solid #007bff; border-radius: 10%">Edit</button></td></form>
 
             <form method="POST" action="/urls/<%= url %>?_method=DELETE"><td><button id="delete" style="color: #B00000; background-color: white; border: 1px solid #B00000; border-radius: 10%">Delete</button></td></form>

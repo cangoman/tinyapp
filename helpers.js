@@ -31,8 +31,6 @@ const urlsForUser = function(id, urlDatabase) {
 };
 
 
-
-
 module.exports = {
   getUserByEmail,
   generateRandomString, 
